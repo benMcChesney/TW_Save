@@ -215,7 +215,7 @@ def extract_save_esf( input_folder , file_path , output_dir ,  config ):
     os.system( "c:")
     os.system( f"cd {esf2xml_dir}" )
     #cmd1 =  f"jruby {esf2xml_dir}esf2xml {esf_path} {cwd}\\{output_dir}{extracted_subfolder}"
-    cmd1 =  f'jruby {esf2xml_dir}esf2xml "{input_folder}\\{file_path}" {output_dir}'
+    cmd1 =  f'jruby {esf2xml_dir}esf2xml  --quiet "{input_folder}\\{file_path}" {output_dir}'
     print( cmd1 )
     return os.system( cmd1 )
 
@@ -257,8 +257,8 @@ def extract_save_file( save_folder , path , output_dir , config ):
         result2 = extract_save_esf( cwd , esf_path , os.path.join(cwd, f"{output_dir}{extracted_subfolder}"), config )  
 
         print('cleanup on archives to save disk space')
-        #os.remove( xz_path )
-        #os.remove( esf_path)
+        os.remove( xz_path )
+        os.remove( esf_path)
 
     else:
         print('skipping extract...')
