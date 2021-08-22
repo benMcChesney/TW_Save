@@ -1,0 +1,68 @@
+goal : 
+
+iteratively parse folder for 100+ savegame files to:
+
+- load / extract 
+- create db
+- insert data into DB
+
+unit name, hero, army_index, strength, max_strength 
+
+
+// Data discovery
+
+SaveViewer:LoadSave
+
+
+campaign_save_game.compressed_data.campaign_env.campaign_setup_local
+
+[value ] = player faction key 
+
+campaign_save_game.compressed_data.campaign_env.campaign_model.CAMPAIGN_Map_data.provinces_data[]
+
+name or prodice, and who owns ? 
+
+
+
+
+TURN - SAVE_GAME_HEADER = [2], [3]
+
+
+need SESSION ID 
+..compressed_data.campaign_env.campaign_model.world.faction_array []
+
+factions w/ info 
+[x] 
+[1] = faction_tag 
+
+
+
+
+[x].Faction_economics
+    [0] - bank balance
+    [2] = taxes
+    [5] = army_upkeep 
+
+..compressed_data.campaign_env.campaign_model.campaign_calendar_date
+
+// turn ? 
+
+[0] in faction array feels like it's the user's player 
+..compressed_data.campaign_env.campaign_model.world.faction_array[] 
+    - [0].Faction.Army_array[x].military_force.unit_container.units_array[ ]:
+        -[0].unit
+            -[4] = strength
+            -[5] = max strength 
+            -[9] = rank
+            - .commander_details.[0] = faction
+            - .unit_record_key.[0].value = unit name
+            -[24] - is garrison ? 
+
+    
+// ARMIES gets you armies + garrisons
+
+in clean HE save - 
+
+[0] - is Eatine's Army
+[1] - is lothern garrison 
+    - how do I know this is a garrison from the data ? 
