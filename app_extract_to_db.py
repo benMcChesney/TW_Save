@@ -3,8 +3,8 @@ import pandas as pd
 import xml.etree.ElementTree as ET
 import shutil
 import configparser
-
-
+import time
+import datetime
 
 #campaign_files = [ "clean_wh2_mortalEmpires.save" ]
 
@@ -193,10 +193,11 @@ def parse_extracted_armies_folder ( folder_path , data_array ) :
             parse_army_xml( army_dir , file, data_array )
 
 
-def clean_folder_name( input ):
+def clean_filename( input ):
  
     output = input.replace( "'" , "" )
     output = output.replace( " " , "_" )
+    output = output.replace( "-" , "_" )
     return output 
 
 def extract_save_esf( input_folder , file_path , output_dir ,  config ):
@@ -215,7 +216,7 @@ def extract_save_esf( input_folder , file_path , output_dir ,  config ):
     os.system( "c:")
     os.system( f"cd {esf2xml_dir}" )
     #cmd1 =  f"jruby {esf2xml_dir}esf2xml {esf_path} {cwd}\\{output_dir}{extracted_subfolder}"
-    cmd1 =  f'jruby {esf2xml_dir}esf2xml  --quiet "{input_folder}\\{file_path}" {output_dir}'
+    cmd1 =  f"jruby {esf2xml_dir}esf2xml {os.path.join(input_folder,file_path)} {output_dir}"
     print( cmd1 )
     return os.system( cmd1 )
 
@@ -234,20 +235,22 @@ def extract_save_file( save_folder , path , output_dir , config ):
         file_ending = p[ path.rfind('.') : ]
         if ( file_ending == '.save'):
             print('need to convert to .esf for esf2xml to work, copying file....')
-            p = f"{path[0:-5]}.esf"
+            p = clean_filename( f"{path[0:-5]}.esf" )
             src = os.path.join( save_folder, path ) 
-            dest =  os.path.join(cwd,p)
+            dest =  os.path.join(cwd, p)
             print ( f" copy {src} -> {dest}")
             copy_result = shutil.copyfile( src, dest )
            
-        result = extract_save_esf( cwd , p , os.path.join(cwd,output_dir) , config )
-        #bFileExist = os.path.isfile( p )
-        #print('debugger ')
+        result = extract_save_esf( cwd , p , os.path.join(cwd,output_dir) , config ) 
+        
+        bFileExist = os.path.isfile( p )
+        os.remove( p ) 
+       # print('debugger ')
         if ( result ):
             print('error!', result )
 
         ## Step 2 - run 7z via cmd to unzip compressed_data.esf.xz
-        xz_path = os.path.join(cwd, f'{output_dir}\compressed_data.esf.xz')
+        xz_path = os.path.join(cwd, f'{output_dir}compressed_data.esf.xz')
 
         cmd_extract = f"7z e {xz_path} -o{cwd}\\{output_dir}" #compressed_data.esf.xz"
         result2 = os.system( cmd_extract )
@@ -270,19 +273,26 @@ campaign_files = [
 
 ]
 
-file = open('orcs_campaign.txt', 'r') 
-
-for line in file: 
+file = open('tomb_kings.txt', 'r') 
+lines = file.readlines()
+max_file = len( lines ) -  1 
+i = 0 
+for line in lines: 
     #print( line ) 
     # remove front quote and \n character
-    campaign_files.append( line[1:-2] ) 
+    #print ( f"'{line}'")
+    if i < max_file:
+        campaign_files.append( line[1:-2] ) 
+    else:
+        campaign_files.append( line[1:-1] ) 
+    #    print('last line!', line[1:-1] )
+    i += 1
 
 config = configparser.ConfigParser()
 config.read('config.ini')
-#print( config.sections() )
 print ( config['dependencies']['esf2xml'])
 print ( config['paths']['save_game_folder'])
-print ( config['paths']['output_folder'])
+print ( config['paths']['output_folder']) 
 
 esf2xml_dir =  config['dependencies']['esf2xml']
 #save_folder = f"C:\\Users\\benmc\\Documents\\TW2_SAVEGAME_BACKUPS\\" 
@@ -294,53 +304,71 @@ cwd = os.getcwd()
 econ_array = []
 army_array = [] 
 
-max = len(campaign_files)
+max = len(campaign_files)-1
 i = 0 
 for s in campaign_files:
 
-    save_file_clean = clean_folder_name( s )
+    save_file_clean = clean_filename( s )
     #'extract\\$filename_extract'
 
     out = output_folder
     templated = out.replace( '[$filename]', save_file_clean )
+    
+    full_path = os.path.join( save_folder , s )
     #output_dir =  f"{save_file_clean}_extract"
-    dat1 = extract_save_file( 
+    file_modstamp = os.path.getmtime(full_path)
+    ts = datetime.datetime.fromtimestamp( file_modstamp )
+    unix_timestamp = int(time.mktime(ts.timetuple()))
+    #print()
+    '''
+    try:
+        dat1 = extract_save_file( 
         save_folder 
         , s
         ,templated
         ,config 
         )
+    except:
+        print("An exception occurred while extracting")
+    '''
 
     extracted_output = os.path.join(templated, extracted_subfolder)
-    session_id = get_session_guid( extracted_output )[1]
-    turn_num = get_turn_number( extracted_output )
+    
+    try :
+        session_id = get_session_guid( extracted_output )[1]
+        turn_num = get_turn_number( extracted_output )
+    
+        # REMOVE FOR NOW
+        # for faction economics at a high KPI level
+        new_array = []
+        parse_extracted_factions_folder( extracted_output, new_array ) 
+        for r in new_array:
+            r["session.id"] = session_id
+            r["turn_num"] = turn_num
+            r["modifiedOn"] = unix_timestamp
+            econ_array.append( r ) 
+
+
+        # parse army information
+        new_array = []
+        #session_id, session_guid, turn_num = 
+        parse_extracted_armies_folder( extracted_output, new_array ) 
+
+        # write in all data universal to this save file
+        for r in new_array:
+            r["session.id"] = session_id
+            r["turn_num"] = turn_num
+            r["modifiedOn"] = unix_timestamp
+            army_array.append( r )
+
+        econ_df = pd.DataFrame( econ_array )
+        army_df = pd.DataFrame( army_array )
+
+        econ_df.to_csv('export_faction_economy.csv')
+        army_df.to_csv('export_army_unit.csv')
+    except:
+        print("An exception occurred while extracting")
    
-    # REMOVE FOR NOW
-    # for faction economics at a high KPI level
-    new_array = []
-    parse_extracted_factions_folder( extracted_output, new_array ) 
-    for r in new_array:
-        r["session.id"] = session_id
-        r["turn_num"] = turn_num
-        econ_array.append( r ) 
-
-
-    # parse army information
-    new_array = []
-    #session_id, session_guid, turn_num = 
-    parse_extracted_armies_folder( extracted_output, new_array ) 
-
-    # write in all data universal to this save file
-    for r in new_array:
-        r["session.id"] = session_id
-        r["turn_num"] = turn_num
-        army_array.append( r )
-
-    econ_df = pd.DataFrame( econ_array )
-    army_df = pd.DataFrame( army_array )
-
-    econ_df.to_csv('export_faction_economy.csv')
-    army_df.to_csv('export_army_unit.csv')
     print( f"@ { i }  / { max } folders loaded and exported")
     i += 1
 
