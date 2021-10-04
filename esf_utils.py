@@ -276,38 +276,131 @@ def parse_args():
     else:
         return sys.argv[1]
 
+def parse_campaign_files_txt( path ):
+    campaign_files = [ ]
+    print('loading esf paths from file @ ', path )
 
+    file = open(path, 'r') 
+    lines = file.readlines()
+    max_file = len( lines ) -  1 
+    i = 0 
+    for line in lines: 
+        #print( line ) 
+        # remove front quote and \n character
+        #print ( f"'{line}'")
+        if i < max_file:
+            campaign_files.append( line[1:-2] ) 
+        else:
+            campaign_files.append( line[1:-1] ) 
+        #    print('last line!', line[1:-1] )
+        i += 1
+
+    return campaign_files
+
+
+def extract_campaign_files(campaign_files):
+
+    max = len(campaign_files)-1
+    i = 0
+    for s in campaign_files:
+
+        save_file_clean = clean_filename( s )
+        #'extract\\$filename_extract'
+
+        out = output_folder
+        templated = out.replace( '[$filename]', save_file_clean )
+        
+        full_path = os.path.join( save_folder , s )
+        #output_dir =  f"{save_file_clean}_extract"
+        file_modstamp = os.path.getmtime(full_path)
+        ts = datetime.datetime.fromtimestamp( file_modstamp )
+        unix_timestamp = int(time.mktime(ts.timetuple()))
+        #print()
+        
+        try:
+            dat1 = extract_save_file( 
+            save_folder 
+            , s
+            ,templated
+            ,config 
+            )
+        except:
+            print("An exception occurred while extracting")
+        
+        # extracted_output = os.path.join(templated, extracted_subfolder)
+    
+        print( f"@ { i }  / { max } folders loaded and exported")
+    i += 1
 # ,"Chevaliers de Lyonesse_Auto-save.1141885391562.save"
-campaign_files = [ 
 
-]
+
+def parse_campaign_files(campaign_files):
+        
+    max = len(campaign_files)-1
+    i = 0 
+    for s in campaign_files:
+
+        
+        save_file_clean = clean_filename( s )
+        #'extract\\$filename_extract'
+
+        out = output_folder
+        templated = out.replace( '[$filename]', save_file_clean )
+        
+        full_path = os.path.join( save_folder , s )
+        #output_dir =  f"{save_file_clean}_extract"
+        file_modstamp = os.path.getmtime(full_path)
+        ts = datetime.datetime.fromtimestamp( file_modstamp )
+        unix_timestamp = int(time.mktime(ts.timetuple()))
+        #print()
+        
+        extracted_output = os.path.join(templated, extracted_subfolder)
+        
+        try :
+            session_id = get_session_guid( extracted_output )[1]
+            turn_num = get_turn_number( extracted_output )
+        
+            # for faction economics at a high KPI level
+            new_array = []
+            parse_extracted_factions_folder( extracted_output, new_array ) 
+            for r in new_array:
+                r["session.id"] = session_id
+                r["turn_num"] = turn_num
+                r["modifiedOn"] = unix_timestamp
+                econ_array.append( r ) 
+
+
+            # parse army information
+            new_array = []
+            #session_id, session_guid, turn_num = 
+            parse_extracted_armies_folder( extracted_output, new_array ) 
+
+            # write in all data universal to this save file
+            for r in new_array:
+                r["session.id"] = session_id
+                r["turn_num"] = turn_num
+                r["modifiedOn"] = unix_timestamp
+                army_array.append( r )
+
+            econ_df = pd.DataFrame( econ_array )
+            army_df = pd.DataFrame( army_array )
+
+            econ_df.to_csv('export_faction_economy.csv')
+            army_df.to_csv('export_army_unit.csv')
+        except:
+            print("An exception occurred while extracting")
+    
+        print( f"@ { i }  / { max } folders loaded and exported")
+        i += 1
 
 campaign_esf_paths_file = parse_args()
-print('loading esf paths from file @ ', campaign_esf_paths_file )
+campaign_files = parse_campaign_files_txt( campaign_esf_paths_file )
 
-file = open(campaign_esf_paths_file, 'r') 
-lines = file.readlines()
-max_file = len( lines ) -  1 
-i = 0 
-for line in lines: 
-    #print( line ) 
-    # remove front quote and \n character
-    #print ( f"'{line}'")
-    if i < max_file:
-        campaign_files.append( line[1:-2] ) 
-    else:
-        campaign_files.append( line[1:-1] ) 
-    #    print('last line!', line[1:-1] )
-    i += 1
 
 config = configparser.ConfigParser()
 config.read('config.ini')
-print ( config['dependencies']['esf2xml'])
-print ( config['paths']['save_game_folder'])
-print ( config['paths']['output_folder']) 
 
 esf2xml_dir =  config['dependencies']['esf2xml']
-#save_folder = f"C:\\Users\\benmc\\Documents\\TW2_SAVEGAME_BACKUPS\\" 
 save_folder = config['paths']['save_game_folder']
 output_folder = config['paths']['output_folder']
 extracted_subfolder = config['paths']['extracted_subfolder']

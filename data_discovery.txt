@@ -66,3 +66,11 @@ in clean HE save -
 [0] - is Eatine's Army
 [1] - is lothern garrison 
     - how do I know this is a garrison from the data ? 
+
+
+Regions contain provinces
+
+world.province_manager.PROVINCE_ARRAY
+
+world.region_manager.region_array 
+
