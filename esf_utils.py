@@ -189,6 +189,43 @@ def parse_extracted_armies_folder ( folder_path , data_array ) :
             parse_army_xml( army_dir , file, data_array )
 
 
+# testing region extraction only
+def parse_region_xml( extracted_output , file ):
+    full_path = os.path.join( extracted_output , 'region' ,  file ) 
+    xml = ET.parse( full_path ).getroot()    
+
+    # get name NK of region from file, NOT filename 
+    region_name = xml.findall( "./[@type = 'REGION']/asc")[0].text
+
+    # noticed that the 0th index will have the data we need, can skip others
+    region_slots_xpath = "./rec/ary/[@type = 'REGION_SLOT_ARRAY']/xml_include"   
+    region_slots_xml = xml.findall( region_slots_xpath )
+    xml_index = 0 
+    for xml_include_path in region_slots_xml: 
+        _path = xml_include_path.attrib['path'] 
+        if xml_index == 0 :
+            region_slot_xml_path = os.path.join( extracted_output, _path )
+            #print( ' at [0] region_slot' , region_slot_xml_path )
+            region_slot_xml = ET.parse( region_slot_xml_path ).getroot()  
+            controller_xpath = "./rec/rec/rec/[@type = 'BUILDING_BASE']/asc"
+            controller_info = region_slot_xml.findall( controller_xpath )
+            data_row = {
+                'settlement_name' : region_name
+                ,'settlement_type' : controller_info[0].text 
+                ,'settlement_owner' : controller_info[1].text
+                ,'settlement_government' : controller_info[2].text
+            }
+            return data_row 
+        xml_index = xml_index + 1
+
+def parse_extracted_region_folder(  extracted_output, new_array ) : 
+    print( f'out={extracted_output}')
+    region_dir = os.path.join( extracted_output , 'region')
+    for file in os.listdir( region_dir ):
+        if file.endswith(".xml"):
+            region_row_data = parse_region_xml( extracted_output , file )
+            new_array.append( region_row_data )
+
 def clean_filename( input ):
  
     output = input.replace( "'" , "" )
