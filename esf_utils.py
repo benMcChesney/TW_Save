@@ -392,7 +392,10 @@ def parse_campaign_files(campaign_files):
     
         print( f"@ { i }  / { max } folders loaded and exported")
         i += 1
+econ_array = []
+army_array = [] 
 
+'''
 campaign_esf_paths_file = parse_args()
 campaign_files = parse_campaign_files_txt( campaign_esf_paths_file )
 
@@ -406,8 +409,6 @@ output_folder = config['paths']['output_folder']
 extracted_subfolder = config['paths']['extracted_subfolder']
 cwd = os.getcwd()
 
-econ_array = []
-army_array = [] 
 
 max = len(campaign_files)-1
 i = 0 
@@ -476,9 +477,9 @@ for s in campaign_files:
     print( f"@ { i }  / { max } folders loaded and exported")
     i += 1
 
+'''
 
-
-print('end of run...')
+#print('end of run...')
 
 
 # name 
