@@ -73,4 +73,11 @@ Regions contain provinces
 world.province_manager.PROVINCE_ARRAY
 
 world.region_manager.region_array 
+- contains each individual region 
+- contains the original owner 
+- contains link to xml path with src files to buildings 
+ region > wh_main_estalia_tobaro.xml 
 
+ links to : 
+ REGION_SLOT_MANAGER.REGION_SLOT_ARRAY[]
+    <xml_include path="region_slot/wh_main_estalia_tobaro-0.xml"/>
