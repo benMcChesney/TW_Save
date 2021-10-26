@@ -9,7 +9,7 @@ import sys
 
 def parse_faction_xml ( path , file, data_array ):
 
-    full_path = f"{path}{file}" 
+    full_path = os.path.join( path , file )
     #print( 'loading ' ,full_path )
     tree = ET.parse( full_path )
     root = tree.getroot()
@@ -21,16 +21,12 @@ def parse_faction_xml ( path , file, data_array ):
 
 def parse_army_xml ( path , file, data_array ):
 
-    full_path = f"{path}{file}" 
-    #print( 'loading ' ,full_path )
+    full_path = os.path.join( path , file ) 
     xml = ET.parse( full_path ).getroot()
-
     
     mf_xpath = "./rec/[@type = 'MILITARY_FORCE']"   
     mf_xml = xml.findall( mf_xpath )[0]
-    #print( 'text is ' ,mf_xml.text)
 
-    #mf_legacy_tags = mf_xml.findall( "./rec/[@type = 'MILITARY_FORCE_LEGACY']" ) 
     campaign_tags = mf_xml.findall( "./rec/rec/[@type = 'CAMPAIGN_LOCALISATION']" )[0] 
     localized = campaign_tags.findall( "asc")
     unit_campaign_name = localized[0].text
@@ -38,13 +34,8 @@ def parse_army_xml ( path , file, data_array ):
     if ( unit_campaign_name is None ):
         unit_campaign_name = 'null'
 
-    #print( "localized length " , len ( mf_legacy_tags ))
-    #print( 'found this many tags ' , len( unit_tags ) )
-
     units_arr_xpath = "./rec/ary/rec/rec/[@type = 'UNIT']"
     units_xml = mf_xml.findall( units_arr_xpath )
-    #print( 'armg_tags ' , units_xml[0] )
-    #print( ' # unit tags - ' , len( units_xml ) )
 
     faction_name_xpath = "./rec/[@type='COMMANDER_DETAILS']/asc"
     faction_commander_xml = units_xml[0].findall( faction_name_xpath )
@@ -169,7 +160,7 @@ def parse_extracted_factions_folder ( folder_path , data_array ) :
 
     #print ( 'debugger')
     # get factions data
-    factions_dir = f"{cwd}\\{folder_path}\\factions\\"
+    factions_dir = os.path.join( folder_path , "factions" )
 
 
     arr = os.listdir( factions_dir )
@@ -181,7 +172,7 @@ def parse_extracted_factions_folder ( folder_path , data_array ) :
 
 def parse_extracted_armies_folder ( folder_path , data_array ) : 
     print( 'getting armies data from ', folder_path )
-    army_dir = f"{cwd}\\{folder_path}\\army\\"
+    army_dir = os.path.join( folder_path ,  "army" )
     arr = os.listdir( army_dir )
     for file in os.listdir( army_dir ):
         #print('file', file )
@@ -226,6 +217,31 @@ def parse_extracted_region_folder(  extracted_output, new_array ) :
             region_row_data = parse_region_xml( extracted_output , file )
             new_array.append( region_row_data )
 
+def parse_province_campaign_data( extracted_output, new_array ):
+    full_path = os.path.join( extracted_output , 'campaign_env' , 'world-0000.xml' ) 
+    xml = ET.parse( full_path ).getroot()    
+
+    # get name NK of region from file, NOT filename 
+    province_xml = xml.findall( "./rec/ary/rec[@type = 'PROVINCE_ARRAY']")
+
+    xml_index = 0 
+    for province in province_xml: 
+
+        #if xml_index == 0 :
+        # parse for testing 
+        province_name = province.findall( './asc')[0].text 
+        #print ( 'province name is ' , province_name ) 
+
+        region_blocks = province.findall( "./rec/rec/ary/rec/asc" )
+        #print ( 'length of region blocks ', len( region_blocks ) )
+        for region in region_blocks : 
+            data_row = {
+                'province_name' : province_name
+                ,'settlement_key' : region.text
+            }
+            new_array.append( data_row )
+    xml_index = xml_index + 1
+
 def clean_filename( input ):
  
     output = input.replace( "'" , "" )
@@ -240,7 +256,7 @@ def extract_save_esf( input_folder , file_path , output_dir ,  config ):
 
     orig_path = file_path
 
-    output_dir_full = f"{cwd}\\{output_dir}"
+    output_dir_full = os.path.join( cwd , output_dir )
     if ( os.path.exists( output_dir_full )):
         shutil.rmtree( output_dir_full ) 
         print ( 'deleting existing folder')
@@ -285,7 +301,7 @@ def extract_save_file( save_folder , path , output_dir , config ):
         ## Step 2 - run 7z via cmd to unzip compressed_data.esf.xz
         xz_path = os.path.join(cwd, f'{output_dir}compressed_data.esf.xz')
 
-        cmd_extract = f"7z e {xz_path} -o{cwd}\\{output_dir}" #compressed_data.esf.xz"
+        cmd_extract = f"7z e {xz_path} -o{os.path.join(cwd,output_dir)}" #compressed_data.esf.xz"
         result2 = os.system( cmd_extract )
 
         ## step 3 - run esf2xml on the extracted data a
@@ -299,11 +315,7 @@ def extract_save_file( save_folder , path , output_dir , config ):
     else:
         print('skipping extract...')
     
-    
-
 def parse_args():
-    
-    
     print('Number of arguments:', len(sys.argv))
     print('Argument List:', str(sys.argv))
 
@@ -331,9 +343,7 @@ def parse_campaign_files_txt( path ):
             campaign_files.append( line[1:-1] ) 
         #    print('last line!', line[1:-1] )
         i += 1
-
     return campaign_files
-
 
 def extract_campaign_files(campaign_files):
 
@@ -431,95 +441,3 @@ def parse_campaign_files(campaign_files):
         i += 1
 econ_array = []
 army_array = [] 
-
-'''
-campaign_esf_paths_file = parse_args()
-campaign_files = parse_campaign_files_txt( campaign_esf_paths_file )
-
-
-config = configparser.ConfigParser()
-config.read('config.ini')
-
-esf2xml_dir =  config['dependencies']['esf2xml']
-save_folder = config['paths']['save_game_folder']
-output_folder = config['paths']['output_folder']
-extracted_subfolder = config['paths']['extracted_subfolder']
-cwd = os.getcwd()
-
-
-max = len(campaign_files)-1
-i = 0 
-for s in campaign_files:
-
-    save_file_clean = clean_filename( s )
-    #'extract\\$filename_extract'
-
-    out = output_folder
-    templated = out.replace( '[$filename]', save_file_clean )
-    
-    full_path = os.path.join( save_folder , s )
-    #output_dir =  f"{save_file_clean}_extract"
-    file_modstamp = os.path.getmtime(full_path)
-    ts = datetime.datetime.fromtimestamp( file_modstamp )
-    unix_timestamp = int(time.mktime(ts.timetuple()))
-    #print()
-    
-    try:
-        dat1 = extract_save_file( 
-        save_folder 
-        , s
-        ,templated
-        ,config 
-        )
-    except:
-        print("An exception occurred while extracting")
-    
-
-    extracted_output = os.path.join(templated, extracted_subfolder)
-    
-    try :
-        session_id = get_session_guid( extracted_output )[1]
-        turn_num = get_turn_number( extracted_output )
-    
-        # for faction economics at a high KPI level
-        new_array = []
-        parse_extracted_factions_folder( extracted_output, new_array ) 
-        for r in new_array:
-            r["session.id"] = session_id
-            r["turn_num"] = turn_num
-            r["modifiedOn"] = unix_timestamp
-            econ_array.append( r ) 
-
-
-        # parse army information
-        new_array = []
-        #session_id, session_guid, turn_num = 
-        parse_extracted_armies_folder( extracted_output, new_array ) 
-
-        # write in all data universal to this save file
-        for r in new_array:
-            r["session.id"] = session_id
-            r["turn_num"] = turn_num
-            r["modifiedOn"] = unix_timestamp
-            army_array.append( r )
-
-        econ_df = pd.DataFrame( econ_array )
-        army_df = pd.DataFrame( army_array )
-
-        econ_df.to_csv('export_faction_economy.csv')
-        army_df.to_csv('export_army_unit.csv')
-    except:
-        print("An exception occurred while extracting")
-   
-    print( f"@ { i }  / { max } folders loaded and exported")
-    i += 1
-
-'''
-
-#print('end of run...')
-
-
-# name 
-
-#faction_name = root[0]'rec']['asc']
-

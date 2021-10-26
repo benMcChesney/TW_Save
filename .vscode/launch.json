@@ -20,7 +20,7 @@
             "program": "${cwd}/command_args.py",
             "console": "internalConsole"
             ,"args": [ 
-                "--esf2xml_dir" , "asdsads"
+                "skaven_clan_skryre_me.txt"
             ]
         }
     ]
