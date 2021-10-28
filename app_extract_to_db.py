@@ -91,7 +91,7 @@ for s in campaign_files:
     new_array = []
     esf_utils.parse_extracted_factions_folder( extracted_output, new_array ) 
     for r in new_array:
-        r["session_id"] = session_id
+        r["session"] = session_id
         r["turn_num"] = turn_num
         r["modifiedOn"] = unix_timestamp
         econ_array.append( r ) 
@@ -105,7 +105,7 @@ for s in campaign_files:
 
     # write in all data universal to this save file
     for r in new_array:
-        r["session_id"] = session_id
+        r["session"] = session_id
         r["turn_num"] = turn_num
         r["modifiedOn"] = unix_timestamp
         army_array.append( r )
@@ -119,7 +119,7 @@ for s in campaign_files:
 
     # write in all data universal to this save file
     for r in new_array:
-        r["session_id"] = session_id
+        r["session"] = session_id
         r["turn_num"] = turn_num
         r["modifiedOn"] = unix_timestamp
         regions_array.append( r )
@@ -135,9 +135,6 @@ for s in campaign_files:
 
         # write in all data universal to this save file
         for r in new_array:
-            r["session_id"] = session_id
-            r["turn_num"] = turn_num
-            r["modifiedOn"] = unix_timestamp
             province_array.append( r )
         province_df = pd.DataFrame( province_array )
         province_df.to_csv('export_province.csv', index=False )
