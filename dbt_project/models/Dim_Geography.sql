@@ -1,4 +1,4 @@
-{{ config(alias='Dim_Geography') }}
+{{ config(alias='Dim_Geography', materialized='table' ) }}
 
 with union_cte AS
 (

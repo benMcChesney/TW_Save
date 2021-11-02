@@ -1,0 +1,43 @@
+version: 2
+
+models:
+  - name: Dim_Factions
+    description: This table contains Dimension details relating to the playable factions within Total War - Warhammer 2
+
+    columns:
+      - name: id
+        description: This is a unique identifier for the faction, regenerated each run. 
+        tests:
+          - unique
+          - not_null
+
+      - name: faction_nk
+        #quote: true
+        description: faction key from source system untouched
+        tests:
+          - not_null
+
+
+      - name: game_source
+        #quote: true
+        description: which game it is originated from 
+        tests:
+          - not_null
+
+      - name: dlc_source
+        #quote: true
+        description: fwhich DLC it was originated from 
+        tests:
+          - not_null
+
+      - name: faction
+        #quote: true
+        description: faction key - what defines your units , lord pool, and buildings
+        tests:
+          - not_null
+
+      - name: lord
+        #quote: true
+        description: which lord you fight as 
+        tests:
+          - not_null

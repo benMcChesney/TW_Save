@@ -1,4 +1,4 @@
-{{ config(alias='Dim_Factions') }}
+{{ config(alias='Dim_Factions', materialized='table' ) }}
 
 -- Dim_Factions
 with dFactions_cte AS

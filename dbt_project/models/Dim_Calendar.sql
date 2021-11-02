@@ -1,4 +1,4 @@
-{{ config(alias='Dim_Calendar') }}
+{{ config(alias='Dim_Calendar', materialized='table' ) }}
 
 with window_cte AS 
 (
