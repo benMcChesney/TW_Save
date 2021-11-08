@@ -6,7 +6,7 @@ with regions_cte AS
         CAST ( turn_num as int ) as turn_num
         , settlement_name
         , settlement_owner 
-        FROM public.tw_regions 
+        FROM tw_regions 
 ), 
 regions_with_prev_cte AS 
 (
@@ -58,15 +58,17 @@ select
     -- ADD GEOs reference
 FROM region_changed_range_cte as a 
 --INNER JOIN {{ ref('Dim_Geography') }} as b 
---INNER JOIN public."Dim_Geography" as dim_geo 
+--INNER JOIN Dim_Geography as dim_geo 
 INNER JOIN {{ ref('Dim_Geography') }} as dim_geo 
 ON a.settlement_name = dim_geo.region_name
 
 INNER JOIN{{ ref('Dim_Factions') }} as dim_f 
+--INNER JOIN Dim_Factions as dim_f 
 ON a.settlement_owner = dim_f.faction_nk 
 
 INNER JOIN {{ ref( 'Dim_Calendar')}} as dim_cal
-ON a.turn_num = dim_cal.turn_num 
+--INNER JOIN Dim_Calendar as dim_cal
+ON a.turn_num = dim_cal.turn_num
 WHERE 1=1 
 
 --AND settlement_owner = 'wh2_main_skv_clan_skyre'
@@ -74,5 +76,5 @@ WHERE 1=1
 --AND settlement_name = 'wh2_main_skavenblight_skavenblight'
 --AND settlement_name = 'wh_main_tilea_luccini'
 
-order by settlement_name, a.turn_num 
+--order by settlement_name, a.turn_num 
 

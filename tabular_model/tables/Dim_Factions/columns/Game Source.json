@@ -1,0 +1,5 @@
+{
+  "name": "Game Source",
+  "dataType": "string",
+  "sourceColumn": "game_source"
+}

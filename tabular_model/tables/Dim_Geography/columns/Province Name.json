@@ -1,0 +1,5 @@
+{
+  "name": "Province Name",
+  "dataType": "string",
+  "sourceColumn": "province_name"
+}

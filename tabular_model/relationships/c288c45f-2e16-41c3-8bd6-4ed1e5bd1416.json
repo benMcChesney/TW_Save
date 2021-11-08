@@ -1,0 +1,7 @@
+{
+  "name": "c288c45f-2e16-41c3-8bd6-4ed1e5bd1416",
+  "fromTable": "Dim_Armies",
+  "fromColumn": "factionid",
+  "toTable": "Dim_Factions",
+  "toColumn": "id"
+}

@@ -1,0 +1,7 @@
+{
+  "name": "91b81812-2cbc-46a1-9146-0cfe5503842d",
+  "fromTable": "Fact_RegionControl",
+  "fromColumn": "factionid",
+  "toTable": "Dim_Factions",
+  "toColumn": "id"
+}

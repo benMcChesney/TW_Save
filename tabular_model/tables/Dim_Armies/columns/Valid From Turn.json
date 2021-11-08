@@ -1,0 +1,5 @@
+{
+  "name": "Valid From Turn",
+  "dataType": "int64",
+  "sourceColumn": "validfrom"
+}

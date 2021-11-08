@@ -1,0 +1,5 @@
+{
+  "name": "id",
+  "dataType": "int64",
+  "sourceColumn": "id"
+}

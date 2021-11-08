@@ -1,0 +1,13 @@
+{
+  "name": "Dim_Calendar",
+  "source": {
+    "type": "query",
+    "query": [
+      "SELECT",
+      "    *",
+      "FROM",
+      " Dim_Calendar"
+    ],
+    "dataSource": "(local).tw_staging"
+  }
+}

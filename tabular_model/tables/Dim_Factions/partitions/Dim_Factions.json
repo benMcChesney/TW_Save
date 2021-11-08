@@ -1,0 +1,13 @@
+{
+  "name": "Dim_Factions",
+  "source": {
+    "type": "query",
+    "query": [
+      "SELECT",
+      "    *",
+      "FROM",
+      "    Dim_Factions"
+    ],
+    "dataSource": "(local).tw_staging"
+  }
+}

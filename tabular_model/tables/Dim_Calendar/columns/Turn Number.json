@@ -1,0 +1,5 @@
+{
+  "name": "Turn Number",
+  "dataType": "int64",
+  "sourceColumn": "turn_num"
+}

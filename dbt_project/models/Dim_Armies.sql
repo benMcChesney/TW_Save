@@ -3,12 +3,13 @@
 with army_units_cte AS
 (
     select 
-        CAST ( turn_num as int ) as turn_num
+        --CAST ( turn_num as int ) as turn_num
         --, CAST ( modifiedOn as int ) as modifiedOn 
+		turn_num 
         , army
         , unit_name
         , faction 
-        FROM public.tw_army_units 
+        FROM tw_army_units 
 )
 , 
 army_with_prev_cte AS
@@ -72,7 +73,8 @@ FROM (
     from army_changed_range_cte as a 
 
     INNER JOIN {{ ref('Dim_Factions') }} as dim_f 
-    ON a.faction = dim_f.faction_nk
+    --INNER JOIN Dim_Factions as dim_f
+	ON a.faction = dim_f.faction_nk
 ) as a 
 --where a.faction = 'wh2_main_skv_clan_skyre'
 --LIMIT 100

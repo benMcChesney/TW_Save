@@ -1,0 +1,5 @@
+{
+  "name": "DLC Source",
+  "dataType": "string",
+  "sourceColumn": "dlc_source"
+}

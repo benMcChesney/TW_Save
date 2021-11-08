@@ -1,0 +1,7 @@
+{
+  "name": "50bf2aaf-7132-4ef9-ba3c-a3cf70ab9eac",
+  "fromTable": "Fact_RegionControl",
+  "fromColumn": "turnId",
+  "toTable": "Dim_Calendar",
+  "toColumn": "id"
+}

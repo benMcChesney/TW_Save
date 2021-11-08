@@ -1,0 +1,6 @@
+{
+  "name": "turnId",
+  "dataType": "int64",
+  "isHidden": true,
+  "sourceColumn": "turnid"
+}

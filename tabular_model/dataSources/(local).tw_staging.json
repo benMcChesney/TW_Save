@@ -1,0 +1,16 @@
+{
+  "name": "(local).tw_staging",
+  "connectionString": "Data Source=(local);Initial Catalog=tw_save;Integrated Security=True",
+  "impersonationMode": "impersonateCurrentUser",
+  "provider": "System.Data.SqlClient",
+  "annotations": [
+    {
+      "name": "TabularEditor_RowLimitClause",
+      "value": "0"
+    },
+    {
+      "name": "TabularEditor_IdentifierQuoting",
+      "value": "0"
+    }
+  ]
+}

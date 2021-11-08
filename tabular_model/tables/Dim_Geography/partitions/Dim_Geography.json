@@ -1,0 +1,13 @@
+{
+  "name": "Dim_Geography",
+  "source": {
+    "type": "query",
+    "query": [
+      "SELECT",
+      "    *",
+      "FROM",
+      "    Dim_Geography"
+    ],
+    "dataSource": "(local).tw_staging"
+  }
+}

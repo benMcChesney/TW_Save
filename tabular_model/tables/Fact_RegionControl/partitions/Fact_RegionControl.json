@@ -1,0 +1,13 @@
+{
+  "name": "Fact_RegionControl",
+  "source": {
+    "type": "query",
+    "query": [
+      "SELECT",
+      "    *",
+      "FROM",
+      "    Fact_RegionControl"
+    ],
+    "dataSource": "(local).tw_staging"
+  }
+}

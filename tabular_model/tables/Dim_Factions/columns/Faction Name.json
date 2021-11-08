@@ -1,0 +1,5 @@
+{
+  "name": "Faction Name",
+  "dataType": "string",
+  "sourceColumn": "faction"
+}

@@ -1,0 +1,13 @@
+{
+  "name": "Dim_Armies",
+  "source": {
+    "type": "query",
+    "query": [
+      "SELECT",
+      "    *",
+      "FROM",
+      "    Dim_Armies"
+    ],
+    "dataSource": "(local).tw_staging"
+  }
+}

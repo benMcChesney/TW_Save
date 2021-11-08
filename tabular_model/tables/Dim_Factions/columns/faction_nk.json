@@ -1,0 +1,6 @@
+{
+  "name": "faction_nk",
+  "dataType": "string",
+  "isHidden": true,
+  "sourceColumn": "faction_nk"
+}

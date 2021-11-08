@@ -1,0 +1,7 @@
+{
+  "name": "35fb6477-fdf4-49e9-9224-56d7b9e23f44",
+  "fromTable": "Fact_RegionControl",
+  "fromColumn": "geographyid",
+  "toTable": "Dim_Geography",
+  "toColumn": "id"
+}
