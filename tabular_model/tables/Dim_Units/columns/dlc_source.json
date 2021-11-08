@@ -1,0 +1,6 @@
+{
+  "name": "dlc_source",
+  "dataType": "string",
+  "sourceColumn": "dlc_source",
+  "sourceProviderType": "varchar"
+}

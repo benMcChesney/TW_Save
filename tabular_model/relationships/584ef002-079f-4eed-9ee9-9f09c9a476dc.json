@@ -1,0 +1,7 @@
+{
+  "name": "584ef002-079f-4eed-9ee9-9f09c9a476dc",
+  "fromTable": "Fact_UnitHistory",
+  "fromColumn": "army_id",
+  "toTable": "Dim_Armies",
+  "toColumn": "id"
+}

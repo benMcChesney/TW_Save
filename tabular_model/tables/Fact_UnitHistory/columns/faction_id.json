@@ -1,0 +1,7 @@
+{
+  "name": "faction_id",
+  "dataType": "int64",
+  "isHidden": true,
+  "sourceColumn": "faction_id",
+  "sourceProviderType": "bigint"
+}

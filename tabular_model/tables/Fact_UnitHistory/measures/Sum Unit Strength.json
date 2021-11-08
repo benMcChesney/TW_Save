@@ -1,0 +1,4 @@
+{
+  "name": "Sum Unit Strength",
+  "expression": "SUM( Fact_UnitHistory[strength] ) "
+}

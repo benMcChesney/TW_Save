@@ -8,6 +8,6 @@
       "FROM",
       " Dim_Calendar"
     ],
-    "dataSource": "(local).tw_staging"
+    "dataSource": "tw_save"
   }
 }

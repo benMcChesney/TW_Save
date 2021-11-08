@@ -1,0 +1,5 @@
+{
+  "name": "Percent Strength ",
+  "expression": "DIVIDE( SUM( Fact_UnitHistory[strength] ) , [Sum Unit Strength] )  ",
+  "formatString": "#,##0.00 %"
+}

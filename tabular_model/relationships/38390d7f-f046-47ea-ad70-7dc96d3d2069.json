@@ -1,0 +1,7 @@
+{
+  "name": "38390d7f-f046-47ea-ad70-7dc96d3d2069",
+  "fromTable": "Fact_UnitHistory",
+  "fromColumn": "faction_id",
+  "toTable": "Dim_Factions",
+  "toColumn": "id"
+}

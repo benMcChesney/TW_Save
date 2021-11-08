@@ -1,0 +1,8 @@
+{
+  "name": "9bf2afe0-f126-4a56-a7e2-58bb62cd0e30",
+  "fromTable": "Dim_Armies",
+  "fromColumn": "Valid To Turn",
+  "toTable": "Dim_Calendar",
+  "toColumn": "id",
+  "isActive": false
+}

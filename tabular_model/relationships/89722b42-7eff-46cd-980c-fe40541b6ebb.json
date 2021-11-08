@@ -1,0 +1,7 @@
+{
+  "name": "89722b42-7eff-46cd-980c-fe40541b6ebb",
+  "fromTable": "Fact_UnitHistory",
+  "fromColumn": "turn_id",
+  "toTable": "Dim_Calendar",
+  "toColumn": "id"
+}

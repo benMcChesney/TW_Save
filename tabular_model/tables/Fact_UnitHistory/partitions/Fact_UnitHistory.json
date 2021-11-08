@@ -1,0 +1,19 @@
+{
+  "name": "Fact_UnitHistory",
+  "source": {
+    "type": "query",
+    "query": [
+      "SELECT",
+      "\t*",
+      "FROM",
+      "\t[dbo].[Fact_UnitHistory]"
+    ],
+    "dataSource": "tw_save"
+  },
+  "annotations": [
+    {
+      "name": "TabularEditor_TableSchema",
+      "value": "{\"Name\":\"Fact_UnitHistory\",\"Schema\":\"dbo\",\"Database\":\"tw_save\",\"IncludedColumns\":[\"strength\",\"max_strength\",\"unit_id\",\"army_id\",\"faction_id\",\"campaign_localized\",\"turn_id\"],\"SelectAll\":true}"
+    }
+  ]
+}

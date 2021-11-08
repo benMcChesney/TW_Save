@@ -1,0 +1,6 @@
+{
+  "name": "faction",
+  "dataType": "string",
+  "sourceColumn": "faction",
+  "sourceProviderType": "varchar"
+}

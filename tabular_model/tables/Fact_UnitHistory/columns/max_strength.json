@@ -1,0 +1,6 @@
+{
+  "name": "max_strength",
+  "dataType": "int64",
+  "sourceColumn": "max_strength",
+  "sourceProviderType": "int"
+}

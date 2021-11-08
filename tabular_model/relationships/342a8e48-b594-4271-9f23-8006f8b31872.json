@@ -1,0 +1,7 @@
+{
+  "name": "342a8e48-b594-4271-9f23-8006f8b31872",
+  "fromTable": "Fact_UnitHistory",
+  "fromColumn": "unit_id",
+  "toTable": "Dim_Units",
+  "toColumn": "id"
+}

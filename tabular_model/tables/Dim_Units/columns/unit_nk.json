@@ -1,0 +1,6 @@
+{
+  "name": "unit_nk",
+  "dataType": "string",
+  "sourceColumn": "unit_nk",
+  "sourceProviderType": "varchar"
+}

@@ -1,0 +1,6 @@
+{
+  "name": "unit_name",
+  "dataType": "string",
+  "sourceColumn": "unit_name",
+  "sourceProviderType": "varchar"
+}

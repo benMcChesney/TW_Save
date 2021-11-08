@@ -3,5 +3,6 @@
   "fromTable": "Dim_Armies",
   "fromColumn": "factionid",
   "toTable": "Dim_Factions",
-  "toColumn": "id"
+  "toColumn": "id",
+  "isActive": false
 }

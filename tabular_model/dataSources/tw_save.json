@@ -1,7 +1,7 @@
 {
-  "name": "(local).tw_staging",
+  "name": "tw_save",
   "connectionString": "Data Source=(local);Initial Catalog=tw_save;Integrated Security=True",
-  "impersonationMode": "impersonateCurrentUser",
+  "impersonationMode": "impersonateServiceAccount",
   "provider": "System.Data.SqlClient",
   "annotations": [
     {

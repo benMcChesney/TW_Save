@@ -2,5 +2,6 @@
   "name": "id",
   "dataType": "int64",
   "isHidden": true,
-  "sourceColumn": "id"
+  "sourceColumn": "id",
+  "sourceProviderType": "bigint"
 }

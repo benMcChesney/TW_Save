@@ -1,0 +1,6 @@
+{
+  "name": "game_source",
+  "dataType": "string",
+  "sourceColumn": "game_source",
+  "sourceProviderType": "varchar"
+}

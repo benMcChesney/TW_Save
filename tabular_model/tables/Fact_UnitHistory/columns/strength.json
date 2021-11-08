@@ -1,0 +1,6 @@
+{
+  "name": "strength",
+  "dataType": "int64",
+  "sourceColumn": "strength",
+  "sourceProviderType": "int"
+}

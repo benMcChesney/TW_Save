@@ -1,0 +1,19 @@
+{
+  "name": "Dim_Units",
+  "source": {
+    "type": "query",
+    "query": [
+      "SELECT",
+      "\t*",
+      "FROM",
+      "\t[dbo].[Dim_Units]"
+    ],
+    "dataSource": "tw_save"
+  },
+  "annotations": [
+    {
+      "name": "TabularEditor_TableSchema",
+      "value": "{\"Name\":\"Dim_Units\",\"Schema\":\"dbo\",\"Database\":\"tw_save\",\"IncludedColumns\":[\"id\",\"game_source\",\"dlc_source\",\"faction\",\"unit_group\",\"unit_name\",\"unit_nk\"],\"SelectAll\":true}"
+    }
+  ]
+}

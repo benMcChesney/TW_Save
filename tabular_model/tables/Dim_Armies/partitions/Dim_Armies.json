@@ -8,6 +8,6 @@
       "FROM",
       "    Dim_Armies"
     ],
-    "dataSource": "(local).tw_staging"
+    "dataSource": "tw_save"
   }
 }
