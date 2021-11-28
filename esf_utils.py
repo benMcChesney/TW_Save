@@ -209,6 +209,49 @@ def parse_region_xml( extracted_output , file ):
             return data_row 
         xml_index = xml_index + 1
 
+
+def parse_character_folder( extracted_output, new_array ):
+
+    print( 'getting character data from ', extracted_output )
+
+    #print ( 'debugger')
+    # get factions data
+    character_dir = os.path.join( extracted_output , "character" )
+
+
+    arr = os.listdir( character_dir )
+    for file in os.listdir( character_dir ):
+        #print('file', file )
+        if file.endswith(".xml"):
+            if file.find("general") != -1:
+                # parse_faction_xml( factions_dir , file, data_array )
+                
+                full_path = os.path.join( character_dir , file ) 
+                #print(full_path )
+                xml = ET.parse( full_path ).getroot()
+                
+                coord_xpath = "./rec/rec[@type = 'LOCOMOTABLE']/v2"   
+                coords = xml.findall( coord_xpath )[0]
+
+                x = coords.attrib['x']
+                y = coords.attrib['y']
+                #print( coords , x ,y ) 
+                
+                details_xpath = "./rec/rec[@type = 'CHARACTER_DETAILS']/asc"   
+                detail_tags = xml.findall( details_xpath )
+                faction = detail_tags[0].text 
+                type = detail_tags[2].text 
+                key = detail_tags[3].text
+
+                data_row = {
+                    'faction' : faction
+                    ,'type' : type
+                    ,'key' : key 
+                    , 'loc.x' : x
+                    , 'loc.y' : y  
+                }
+                new_array.append( data_row )
+                
 def parse_extracted_region_folder(  extracted_output, new_array ) : 
     print( f'out={extracted_output}')
     region_dir = os.path.join( extracted_output , 'region')

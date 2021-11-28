@@ -52,6 +52,7 @@ cwd = os.getcwd()
 econ_array = []
 army_array = [] 
 regions_array = [] 
+characters_array = [] 
 
 max = len(campaign_files)-1
 i = 0 
@@ -139,6 +140,19 @@ for s in campaign_files:
         province_df = pd.DataFrame( province_array )
         province_df.to_csv('export_province.csv', index=False )
 
+
+     # parse character information
+    new_array = []
+    esf_utils.parse_character_folder( extracted_output, new_array ) 
+
+    # write in all data universal to this save file
+    for r in new_array:
+        r["session"] = session_id
+        r["turn_num"] = turn_num
+        r["modifiedOn"] = unix_timestamp
+        characters_array.append( r )
+    characters_df = pd.DataFrame( characters_array )
+    characters_df.to_csv('export_chracters.csv' , index=False )
 
     #except:
     #    print("An exception occurred while extracting")

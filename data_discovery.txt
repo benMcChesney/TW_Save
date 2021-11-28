@@ -81,3 +81,21 @@ world.region_manager.region_array
  links to : 
  REGION_SLOT_MANAGER.REGION_SLOT_ARRAY[]
     <xml_include path="region_slot/wh_main_estalia_tobaro-0.xml"/>
+
+
+
+## Characters 
+
+Faction[x]/Character_array
+
+[0] - faction_id ? 
+[1] - string 'general'
+
+/character_details/
+[9] = 'genera' // type
+[10] = wh2_main_hef_tyrion // key 
+
+/locomotable
+[0] = (x,y) coordinates
+[1] = UV[0]
+[2] = UV[1]
