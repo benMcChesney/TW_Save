@@ -60,7 +60,7 @@ FROM region_changed_range_cte as a
 --INNER JOIN {{ ref('Dim_Geography') }} as b 
 --INNER JOIN Dim_Geography as dim_geo 
 INNER JOIN {{ ref('Dim_Geography') }} as dim_geo 
-ON a.settlement_name = dim_geo.region_name
+ON a.settlement_name = dim_geo.region_nk
 
 INNER JOIN{{ ref('Dim_Factions') }} as dim_f 
 --INNER JOIN Dim_Factions as dim_f 
