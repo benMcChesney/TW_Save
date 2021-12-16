@@ -99,3 +99,20 @@ Faction[x]/Character_array
 [0] = (x,y) coordinates
 [1] = UV[0]
 [2] = UV[1]
+
+
+-- bring in office from character 
+-- bring in character details names 
+
+## Battle Outcomes
+-- campaign_model-0000.xml
+
+find ( 'battle__result' )
+- this only seems to have the last battle result. Not all if there are multiple per turn. 
+- but does have good data like kills / unit num , etc...
+
+
+-- world-0000.xml
+- BATTLE_LOG_BLOCK 
+> characters > battle_log_block 
+> factions > battle_log_block 

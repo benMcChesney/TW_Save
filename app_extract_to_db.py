@@ -53,6 +53,8 @@ econ_array = []
 army_array = [] 
 regions_array = [] 
 characters_array = [] 
+battle_result_array = [] 
+diplomacy_array = [] 
 
 max = len(campaign_files)-1
 i = 0 
@@ -88,6 +90,7 @@ for s in campaign_files:
     session_id = esf_utils.get_session_guid( extracted_output )[1]
     turn_num = esf_utils.get_turn_number( extracted_output )
 
+    '''    
     # for faction economics at a high KPI level
     new_array = []
     esf_utils.parse_extracted_factions_folder( extracted_output, new_array ) 
@@ -98,7 +101,9 @@ for s in campaign_files:
         econ_array.append( r ) 
     econ_df = pd.DataFrame( econ_array )
     econ_df.to_csv('export_faction_economy.csv' , index=False )
+    '''
 
+    '''
     # parse army information
     new_array = []
     #session_id, session_guid, turn_num = 
@@ -112,7 +117,10 @@ for s in campaign_files:
         army_array.append( r )
     army_df = pd.DataFrame( army_array )
     army_df.to_csv('export_army_unit.csv' , index=False )
-
+    '''
+    
+    
+    '''
     # parse region information
     new_array = []
     #session_id, session_guid, turn_num = 
@@ -140,7 +148,9 @@ for s in campaign_files:
         province_df = pd.DataFrame( province_array )
         province_df.to_csv('export_province.csv', index=False )
 
+    '''
 
+    '''
      # parse character information
     new_array = []
     esf_utils.parse_character_folder( extracted_output, new_array ) 
@@ -153,6 +163,34 @@ for s in campaign_files:
         characters_array.append( r )
     characters_df = pd.DataFrame( characters_array )
     characters_df.to_csv('export_chracters.csv' , index=False )
+    '''
+    '''
+    new_array = []
+    esf_utils.parse_campaigndata_battle_result( extracted_output, new_array ) 
+
+    # write in all data universal to this save file
+    for r in new_array:
+        r["session"] = session_id
+        r["turn_num"] = turn_num
+        r["modifiedOn"] = unix_timestamp
+        battle_result_array.append( r )
+    battle_result_df = pd.DataFrame( battle_result_array )
+    battle_result_df.to_csv('export_battle_result.csv' , index=False )
+    '''
+
+    new_array = []
+    esf_utils.parse_diplomacy_from_factions_folder( extracted_output, new_array ) 
+
+    # write in all data universal to this save file
+    for r in new_array:
+        r["session"] = session_id
+        r["turn_num"] = turn_num
+        r["modifiedOn"] = unix_timestamp
+        diplomacy_array.append( r )
+    diplomacy_array_df = pd.DataFrame( diplomacy_array )
+    diplomacy_array_df.to_csv('export_diplomacy.csv' , index=False )
+
+
 
     #except:
     #    print("An exception occurred while extracting")

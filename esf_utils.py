@@ -6,6 +6,9 @@ import configparser
 import time
 import datetime
 import sys
+import xml.etree.ElementTree as ET
+from lxml import etree
+import copy
 
 def parse_faction_xml ( path , file, data_array ):
 
@@ -16,13 +19,14 @@ def parse_faction_xml ( path , file, data_array ):
     row_to_write = parse_economy( root )
     faction_data = parse_faction_metadata( root )
     row_to_write['faction_name'] = faction_data['faction_name']
-
+    row_to_write['faction_id'] = faction_data['faction_id']
     data_array.append( row_to_write ) 
 
 def parse_army_xml ( path , file, data_array ):
 
     full_path = os.path.join( path , file ) 
     xml = ET.parse( full_path ).getroot()
+    
     
     mf_xpath = "./rec/[@type = 'MILITARY_FORCE']"   
     mf_xml = xml.findall( mf_xpath )[0]
@@ -41,14 +45,17 @@ def parse_army_xml ( path , file, data_array ):
     faction_commander_xml = units_xml[0].findall( faction_name_xpath )
     faction_name = faction_commander_xml[0].text
     
-    #unit_tags =  mf_xml.findall( units_arr_xpath )
-    #print( 'found this many tags ' , len( unit_tags ) )
-
-    #unit_container_xpath = "./rec [@type = 'UNIT_CONTAINER']"
-    #unit_container_tags = mf_xml.findall( unit_container_xpath  )
-    #print( 'found this many tags ' , len( unit_container_tags ) )
-    
+    mf_legacy = "./rec/rec/rec/[@type = 'MILITARY_FORCE_LEGACY_HISTORY']"
+    mf_legacy_xml = xml.find( mf_legacy )
+    char_path = "./rec/ary/rec/rec/asc"
+    name_tags = mf_legacy_xml.findall( char_path )
+    tags_list = []
+    for tag in name_tags : 
+        if tag.text != None :
+            tags_list.append( tag.text ) 
+    commander_nk = '_'.join(tags_list)
     #print('debugger')
+    unit_index = 0 
     for unit in units_xml:
 
         unit_name = unit.findall( "./rec/[@type='UNIT_RECORD_KEY']/asc")[0].text
@@ -60,22 +67,32 @@ def parse_army_xml ( path , file, data_array ):
         garrison_a = int( unit_stats_tags[8].text )
         garrison_b = int( unit_stats_tags[9].text )
         #print('debugger')
-        #bank_balance = int(rec.findall("./i[1]" )[0].text)
-        #taxes = int(rec.findall("./u[2]" )[0].text)
-        #army_upkeep = int(rec.findall( "./u[5]" )[0].text)
+
+        file_trunc = file.replace( '.xml' , '' )
+        file_trunc = file_trunc.replace( 'ARMY-' , '' )
+
+        army_index = False
+        if len( file_trunc ) < 5 :
+            army_index = int( file_trunc )
+        
+      
         json = {
             "unit_name": unit_name
             ,"strength":unit_strength
             ,"max_strength" : unit_maxStrength
             ,'army' : file 
             ,'faction' : faction_name
-            , 'garrison_a' : garrison_a
-            , 'garrison_b' : garrison_b
-            , "campaign_localized" : unit_campaign_name
+            #,'army_status': army_status
+            , 'army_unit_index' : unit_index
+            , 'army_index' : army_index
+            #, 'garrison_a' : garrison_a
+            #, 'garrison_b' : garrison_b
+            , "localized_status" : unit_campaign_name
+            , 'commander_nk' : commander_nk
         }
 
         data_array.append( json ) 
-
+        unit_index += 1
     #row_to_write = parse_economy( root )
     #faction_data = parse_faction_metadata( root )
     #row_to_write['faction_name'] = faction_data['faction_name']
@@ -101,8 +118,10 @@ def parse_faction_metadata( xml ):
     faction_xpath = "[@type = 'FACTION']"   
     for rec in xml.findall( faction_xpath ):
         faction_name = rec.findall("asc[1]" )[0].text
+        faction_id = rec.findall("u[1]" )[0].text
         json = {
             "faction_name": faction_name
+            ,"faction_id" : faction_id
         }
         return json
 
@@ -223,34 +242,42 @@ def parse_character_folder( extracted_output, new_array ):
     for file in os.listdir( character_dir ):
         #print('file', file )
         if file.endswith(".xml"):
-            if file.find("general") != -1:
-                # parse_faction_xml( factions_dir , file, data_array )
-                
-                full_path = os.path.join( character_dir , file ) 
-                #print(full_path )
-                xml = ET.parse( full_path ).getroot()
-                
-                coord_xpath = "./rec/rec[@type = 'LOCOMOTABLE']/v2"   
-                coords = xml.findall( coord_xpath )[0]
+            #if file.find("general") != -1:
+            # parse_faction_xml( factions_dir , file, data_array )
+            
+            full_path = os.path.join( character_dir , file ) 
+            #print(full_path )
+            xml = ET.parse( full_path ).getroot()
+            
+            coord_xpath = "./rec/rec[@type = 'LOCOMOTABLE']/v2"   
+            coords = xml.findall( coord_xpath )[0]
 
-                x = coords.attrib['x']
-                y = coords.attrib['y']
-                #print( coords , x ,y ) 
-                
-                details_xpath = "./rec/rec[@type = 'CHARACTER_DETAILS']/asc"   
-                detail_tags = xml.findall( details_xpath )
-                faction = detail_tags[0].text 
-                type = detail_tags[2].text 
-                key = detail_tags[3].text
+            x = coords.attrib['x']
+            y = coords.attrib['y']
+            #print( coords , x ,y ) 
+            
+            details_xpath = "./rec/rec[@type = 'CHARACTER_DETAILS']/asc"   
+            detail_tags = xml.findall( details_xpath )
+            faction = detail_tags[0].text 
+            type = detail_tags[2].text 
+            key = detail_tags[3].text
 
-                data_row = {
-                    'faction' : faction
-                    ,'type' : type
-                    ,'key' : key 
-                    , 'loc.x' : x
-                    , 'loc.y' : y  
-                }
-                new_array.append( data_row )
+            name_blocks = "./rec/rec[@type = 'CHARACTER_DETAILS']/rec[@type = 'CHARACTER_NAME']/ary/rec[@type='NAMES_BLOCK']/rec/asc"  
+            name_tags = xml.findall( name_blocks )
+            tags_list = []
+            for tag in name_tags : 
+                if tag.text != None :
+                    tags_list.append( tag.text ) 
+            name_nk = '_'.join(tags_list)
+            data_row = {
+                'faction' : faction
+                ,'type' : type
+                ,'key' : key 
+                , 'loc.x' : x
+                , 'loc.y' : y  
+                , 'name_nk' : name_nk 
+            }
+            new_array.append( data_row )
                 
 def parse_extracted_region_folder(  extracted_output, new_array ) : 
     print( f'out={extracted_output}')
@@ -284,6 +311,108 @@ def parse_province_campaign_data( extracted_output, new_array ):
             }
             new_array.append( data_row )
     xml_index = xml_index + 1
+
+
+def parse_campaigndata_battle_result( extracted_output, new_array ) :
+    
+    path = os.path.join( extracted_output , "./campaign_env/campaign_model-0000.xml")
+    #xml_path = "./extract/ikit_claw_turn1_battle_ar.13389809406.save_extract/extract/campaign_env/campaign_model-0000.xml"
+    _parser = etree.XMLParser(recover=True)
+    xml = ET.parse( path , parser = _parser )
+
+    br_xpath = "./rec/rec/[@type = 'BATTLE_RESULTS']"
+    # fun fact - ending in / gets all children, not / gets all tags 
+    #army_units_xpath1 = f"{br_xpath}/ary/[ @type = 'ALLIANCES']/rec/rec/ary/rec/rec/ary[ @type = 'UNITS']/rec[ @type = 'UNITS']/rec[ @type = 'BATTLE_RESULT_UNIT']
+    br_army_xpath = f"{br_xpath}/ary/[ @type = 'ALLIANCES']/rec/rec/ary/rec/rec[ @type = 'BATTLE_RESULT_ARMY']"
+    br_army_tags = xml.findall( br_army_xpath )
+
+    #new_array = [] 
+    # Iterate within each army - link these together somehow 
+    for army in br_army_tags:
+
+        army_json = {} 
+        # BATTLE_SETUP_FACTION
+        faction_xpath = f"./rec[ @type='BATTLE_SETUP_FACTION']/asc"
+        faction_tags = army.findall( faction_xpath )
+        faction_nk = faction_tags[0].text
+        
+        army_attrib_xpath =  f"./s"
+        army_attrib_tags = army.findall( army_attrib_xpath )
+
+        ui_path_xpath = f"./asc"
+        ui_path_tags = army.findall( ui_path_xpath )
+
+        army_json[ 'leader'] = army_attrib_tags[0].text 
+        army_json[ 'ui_path'] =  ui_path_tags[0].text
+        army_json[ 'faction_nk'] = faction_nk
+
+        # now parse individual units
+        bru_xpath = "./ary[ @type = 'UNITS']/rec[ @type = 'UNITS']/rec[ @type = 'BATTLE_RESULT_UNIT']"
+        bru_tags = army.findall( bru_xpath )
+
+        for t in bru_tags : 
+            unit_data = t.findall( 'u') 
+
+            json = copy.deepcopy(army_json) 
+            if len( unit_data ) >= 6 :
+                json[ 'kills'] = unit_data[4].text
+                json[ 'start_num_units'] = unit_data[0].text
+                json[ 'end_num_units'] = unit_data[1].text
+
+            unit_string_data = t.findall( 's') 
+            if len( unit_data ) >= 1 :
+                json[ 'unit_name'] = unit_string_data[0].text 
+
+            new_array.append ( json ) 
+
+            #print( 'debuger')
+
+        #print( 'debuger')
+
+
+def parse_diplomacy_from_factions_folder( extracted_output, data_array ):
+    factions_dir = os.path.join( extracted_output , "factions" )
+
+    print ( 'parsing factions folder for diplomacy...')
+
+    arr = os.listdir( factions_dir )
+    for file in os.listdir( factions_dir ):
+        if file.endswith(".xml"):
+            # print ( 'loading file' , file )
+            full_path = os.path.join( factions_dir , file )
+            # full_path = "C:/lab/tw_save/extract/Clan_Skryre_attack_2.1327371162.save_extract/extract/factions/wh2_main_skv_clan_skyre.xml"
+            tree = ET.parse( full_path )
+            root = tree.getroot()
+            row = {} 
+            #xpath = f"./rec/rec/ary/rec/[@type='OLD_DIPLOMACY_RELATIONSHIP']"rec[ @type = 'BATTLE_RESULT_ARMY']
+            xpath = f"./rec/[ @type = 'OLD_DIPLOMACY_MANAGER']/ary/rec[ @type='DIPLOMACY_RELATIONSHIPS_ARRAY']"        
+            tags = root.findall( xpath )
+
+            faction_data = parse_faction_metadata( root )
+            
+
+            # to do - optimize and flatten all children 
+            for tag in tags :
+                row = {}
+                row['faction_name'] = faction_data['faction_name']
+                row['faction_id'] = faction_data['faction_id']
+
+                u_tags = tag.findall( f"./rec/u" )    
+                for x in range ( 0 , len( u_tags )):
+                    row[ f"u_{x}"] = u_tags[x].text 
+
+                i_tags = tag.findall( f"./rec/i" )    
+                for x in range ( 0 , len( i_tags )):
+                    row[ f"i_{x}"] = i_tags[x].text 
+
+                asc_tags = tag.findall( f"./rec/asc" )    
+                for x in range ( 0 , len( asc_tags )):
+                    row[ f"asc_{x}"] = asc_tags[x].text 
+                        
+                data_array.append( row )
+                row = {} 
+                
+
 
 def clean_filename( input ):
  
