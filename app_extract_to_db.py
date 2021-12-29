@@ -193,10 +193,11 @@ for s in campaign_files:
             # parse province information - only need to run 1x 
             if i == 0 :
                 new_array = []
+                print ( 'init province db ')
                 #session_id, session_guid, turn_num = 
                 esf_utils.parse_province_campaign_data( extracted_output, new_array ) 
                 province_df = pd.DataFrame( new_array )
-                top_df.to_sql(  name='tw_province' , con=conn, if_exists="replace", index=False )
+                province_df.to_sql(  name='tw_province' , con=conn, if_exists="replace", index=False )
             
         
             # parse character information
