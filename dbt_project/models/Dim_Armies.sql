@@ -9,7 +9,10 @@ with army_units_cte AS
         , army
         , unit_name
         , faction 
-        FROM tw_army_units 
+		, d_nm.id as name_mapping_id
+        FROM tw_army_units as u 
+		INNER JOIN Dim_NameMapping as d_nm 
+		ON u.commander_nk = d_nm.name_nk
 )
 , 
 army_with_prev_cte AS
@@ -32,6 +35,7 @@ army_with_prev_cte AS
         , army 
         , faction 
         , previous_faction 
+		, name_mapping_id
     FROM army_with_prev_cte
     where 
         unit_row = 1 
@@ -60,6 +64,7 @@ FROM (
     select
         
         army 
+		, name_mapping_id
         --, a.faction 
         , turn_num as validFrom
         , case 
