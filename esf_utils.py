@@ -397,7 +397,21 @@ def parse_diplomacy_from_factions_folder( extracted_output, data_array ):
                 row['faction_name'] = faction_data['faction_name']
                 row['faction_id'] = faction_data['faction_id']
 
-                u_tags = tag.findall( f"./rec/u" )    
+                #c = tag.findall( "./rec/")
+
+                u0_tag = tag.find( "./rec/u")
+                row[ 'diplomacy_faction_id_nk'] = u0_tag.text
+           
+                asc0_tag = tag.find( "./rec/asc")  
+                row[ 'diplomacy_faction_id_nk2'] = asc0_tag.text
+               
+                #root.getchildren()
+                #for child in children:
+                
+                #row[ 'faction_id_nk'] = u_tags[0].text
+
+                #attrib_lst = list(tag)
+                '''
                 for x in range ( 0 , len( u_tags )):
                     row[ f"u_{x}"] = u_tags[x].text 
 
@@ -408,7 +422,7 @@ def parse_diplomacy_from_factions_folder( extracted_output, data_array ):
                 asc_tags = tag.findall( f"./rec/asc" )    
                 for x in range ( 0 , len( asc_tags )):
                     row[ f"asc_{x}"] = asc_tags[x].text 
-                        
+                '''     
                 data_array.append( row )
                 row = {} 
                 
