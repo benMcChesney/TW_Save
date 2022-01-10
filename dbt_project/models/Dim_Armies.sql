@@ -55,13 +55,9 @@ army_with_prev_cte AS
     FROM army_changed_cte
     JOIN max_turn 
     ON 1=1 
-)
-
-select 
-    *
-    , ROW_NUMBER() OVER( ORDER BY army, factionId, validFrom, validTo ASC ) as id 
-FROM ( 
-    select
+), a as 
+(
+	select
         
         army 
 		, name_mapping_id
@@ -74,13 +70,18 @@ FROM (
                 nextTurn 
             END as validTo
         , dim_f.id as factionId  
+		from army_changed_range_cte as a
+		INNER JOIN {{ ref('Dim_Factions') }} as dim_f 
+		--INNER JOIN Dim_Factions as dim_f
+		ON a.faction = dim_f.faction_nk
         
-    from army_changed_range_cte as a 
+		 
+)
 
-    INNER JOIN {{ ref('Dim_Factions') }} as dim_f 
-    --INNER JOIN Dim_Factions as dim_f
-	ON a.faction = dim_f.faction_nk
-) as a 
+select 
+    *
+    , ROW_NUMBER() OVER( ORDER BY army, factionId, validFrom, validTo ASC ) as id 
+FROM a
 --where a.faction = 'wh2_main_skv_clan_skyre'
 --LIMIT 100
 
