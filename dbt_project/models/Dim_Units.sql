@@ -20,12 +20,20 @@ faction_split_cte AS
     FROM distinct_units_cte
 )
 
-select  
-	ROW_NUMBER() OVER( ORDER BY un ASC ) as id 
-	, SUBSTRING( un, 0 , us_0 ) as game_source
-	, SUBSTRING( un, us_0+1 , us_1 - us_0 - 1) as dlc_source
-	, SUBSTRING( un, us_1+1 , us_2 - us_1 - 1) as faction
-	, SUBSTRING( un, us_2+1 , us_3 - us_2 - 1) as unit_group
-	, SUBSTRING( un, us_3+1 , LEN(un) - us_3 ) as unit_name
-	, un as unit_nk 
-FROM faction_split_cte
+, ready_cte AS
+(
+	select  
+		ROW_NUMBER() OVER( ORDER BY un ASC ) as id 
+		, SUBSTRING( un, 0 , us_0 ) as game_source
+		, SUBSTRING( un, us_0+1 , us_1 - us_0 - 1) as dlc_source
+		, SUBSTRING( un, us_1+1 , us_2 - us_1 - 1) as faction
+		, SUBSTRING( un, us_2+1 , us_3 - us_2 - 1) as unit_group
+		, SUBSTRING( un, us_3+1 , LEN(un) - us_3 ) as unit_name
+		, un as unit_nk 
+	FROM faction_split_cte
+)
+
+select cte.* , d_ugl.unitLabel 
+FROM ready_cte as cte 
+LEFT OUTER JOIN {{ ref('Data_UnitGroupLabels') }}  as d_ugl
+ON cte.unit_group = d_ugl.unit_group

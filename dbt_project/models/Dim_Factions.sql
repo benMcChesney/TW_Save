@@ -34,5 +34,5 @@ select
 	labeled_cte.*
 	, dfl.factionLabel
 FROM labeled_cte
-LEFT OUTER JOIN Data_FactionLabels as dfl 
+LEFT OUTER JOIN {{ ref('Data_FactionLabels') }}  as dfl 
 ON labeled_cte.faction = dfl.faction
