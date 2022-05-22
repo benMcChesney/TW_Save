@@ -1,0 +1,5 @@
+{
+  "name": "name_mapping_id",
+  "dataType": "int64",
+  "sourceColumn": "name_mapping_id"
+}

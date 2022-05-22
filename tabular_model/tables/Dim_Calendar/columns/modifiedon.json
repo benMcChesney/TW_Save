@@ -1,7 +1,0 @@
-{
-  "name": "modifiedon",
-  "dataType": "int64",
-  "isHidden": true,
-  "sourceColumn": "modifiedon",
-  "sourceProviderType": "int"
-}

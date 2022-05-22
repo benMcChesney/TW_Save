@@ -1,7 +1,7 @@
 {
   "name": "turn_id",
-  "dataType": "int64",
+  "dataType": "string",
   "isHidden": true,
   "sourceColumn": "turn_id",
-  "sourceProviderType": "int"
+  "sourceProviderType": "varchar"
 }

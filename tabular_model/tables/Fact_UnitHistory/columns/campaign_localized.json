@@ -1,6 +1,0 @@
-{
-  "name": "campaign_localized",
-  "dataType": "string",
-  "sourceColumn": "campaign_localized",
-  "sourceProviderType": "varchar"
-}

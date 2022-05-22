@@ -1,5 +1,6 @@
 {
   "name": "Valid From Turn",
-  "dataType": "int64",
-  "sourceColumn": "validfrom"
+  "dataType": "string",
+  "sourceColumn": "validfrom",
+  "sourceProviderType": "varchar"
 }

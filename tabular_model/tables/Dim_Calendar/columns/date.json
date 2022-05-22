@@ -1,0 +1,5 @@
+{
+  "name": "date",
+  "dataType": "dateTime",
+  "sourceColumn": "date"
+}

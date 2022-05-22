@@ -7,70 +7,54 @@ with regions_cte AS
         , settlement_name
         , settlement_owner 
         FROM tw_regions 
-), 
-regions_with_prev_cte AS 
-(
-    select 
-        * 
-        , CASE 
-            WHEN turn_num = 1  
-                THEN NULL 
-            ELSE 
-                LAG ( settlement_owner, 1 ) over ( ORDER BY settlement_name, turn_num )
-            END as previous_owner
-    FROM regions_cte
 )
-, region_changed_cte AS 
+, pre_pivot AS
 (
-    select * 
-    FROM regions_with_prev_cte
-    where settlement_owner != previous_owner 
-        OR previous_owner IS NULL 
-)
-, max_turn AS 
+
+	select 
+		--settlement_name as region_name
+		--, settlement_owner as region_owner
+		dim_geo.id as geographyId 
+		, dim_f.id as factionId
+		, a.turn_num as turn_num
+		, dim_cal.turn_num as turnId
+		-- ADD GEOs reference
+	FROM regions_cte as a 
+	--INNER JOIN {{ ref('Dim_Geography') }} as b 
+	--INNER JOIN Dim_Geography as dim_geo 
+	INNER JOIN {{ ref('Dim_Geography') }} as dim_geo 
+	ON a.settlement_name = dim_geo.region_nk
+
+	INNER JOIN{{ ref('Dim_Factions') }} as dim_f 
+	--INNER JOIN Dim_Factions as dim_f 
+	ON a.settlement_owner = dim_f.faction_nk 
+
+	--INNER JOIN {{ ref( 'Dim_Calendar')}} as dim_cal
+	INNER JOIN Dim_Calendar as dim_cal
+	ON a.turn_num = dim_cal.turn_num
+	WHERE 1=1 
+) 
+
+select * 
+FROM pre_pivot
+--ORDER BY geographyId, turn_num
+/*
+
+-- Pivot table with one row and five columns  
+SELECT 'AverageCost' AS Cost_Sorted_By_Production_Days,   
+  [0], [1], [2], [3], [4]  
+FROM  
 (
-    select MAX( turn_num ) as maxTurn
-    FROM regions_cte
-)
-,region_changed_range_cte AS 
-(
-    select 
-    *
-    , LEAD( turn_num , 1 ) over ( ORDER BY settlement_name, turn_num ) as nextTurn
-    FROM region_changed_cte
-    JOIN max_turn 
-    ON 1=1 
-)
-
-select 
-    --settlement_name as region_name
-    --, settlement_owner as region_owner
-    dim_geo.id as geographyId 
-    , dim_f.id as factionId
-    , a.turn_num as validFrom
-    , case 
-        WHEN nextturn = 1 or nextturn IS NULL 
-            THEN maxTurn 
-        ELSE 
-            nextTurn 
-        END as validTo
-    , dim_cal.turn_num as turnId
-    -- ADD GEOs reference
-FROM region_changed_range_cte as a 
---INNER JOIN {{ ref('Dim_Geography') }} as b 
---INNER JOIN Dim_Geography as dim_geo 
-INNER JOIN {{ ref('Dim_Geography') }} as dim_geo 
-ON a.settlement_name = dim_geo.region_nk
-
-INNER JOIN{{ ref('Dim_Factions') }} as dim_f 
---INNER JOIN Dim_Factions as dim_f 
-ON a.settlement_owner = dim_f.faction_nk 
-
-INNER JOIN {{ ref( 'Dim_Calendar')}} as dim_cal
---INNER JOIN Dim_Calendar as dim_cal
-ON a.turn_num = dim_cal.turn_num
-WHERE 1=1 
-
+  SELECT DaysToManufacture, StandardCost   
+  FROM Production.Product
+) AS SourceTable  
+PIVOT  
+(  
+  AVG(StandardCost)  
+  FOR DaysToManufacture IN ([0], [1], [2], [3], [4])  
+) AS PivotTable;  
+  
+  */
 --AND settlement_owner = 'wh2_main_skv_clan_skyre'
 -- Capital Skavenblight! Within Skaven control the entire campaign
 --AND settlement_name = 'wh2_main_skavenblight_skavenblight'
